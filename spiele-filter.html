@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaming Spiele-Filter</title>
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  background: radial-gradient(circle at top, #0c0f1a, #05060b);
+  color: #e0e0ff;
+  text-align: center;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: clamp(32px, 5vw, 50px);
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px #6f00ff;
+  margin-bottom: 30px;
+  padding: 10px;
+}
+
+#loading {
+  margin: 20px auto;
+  display: none;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #6f00ff;
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  margin: auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#search {
+  width: 90%;
+  max-width: 600px;
+  padding: 16px 20px;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 3px solid #6f00ff;
+  background: rgba(111, 0, 255, 0.1);
+  color: #fff;
+  margin: 20px auto;
+  display: block;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.3s;
+}
+
+#search:focus {
+  outline: none;
+  box-shadow: 0 0 20px rgba(111, 0, 255, 0.5);
+  background: rgba(111, 0, 255, 0.2);
+}
+
+#search::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+#filterContainer {
+  margin: 30px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.filter-btn {
+  padding: 14px 20px;
+  border: 3px solid #6f00ff;
+  background: transparent;
+  color: #c5bfff;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  font-family: 'Orbitron', sans-serif;
+  min-width: 120px;
+}
+
+.filter-btn.active {
+  background: #8a2eff;
+  color: white;
+  box-shadow: 0 0 20px #8a2eff;
+  transform: translateY(-2px);
+}
+
+.filter-btn:hover {
+  background: #6f00ff;
+  color: white;
+  transform: scale(1.05);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 40px auto 0;
+  width: 90%;
+  max-width: 1200px;
+}
+
+li {
+  position: relative;
+  margin: 15px 0;
+  transition: transform 0.3s;
+}
+
+li:hover {
+  transform: translateX(5px);
+}
+
+a.game-link {
+  display: block;
+  padding: 20px;
+  font-size: clamp(18px, 2.5vw, 22px);
+  background: rgba(111, 0, 255, 0.15);
+  border-radius: 12px;
+  color: #e0e0ff;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+  text-align: left;
+  padding-right: 60px;
+}
+
+a.game-link:hover {
+  background: rgba(138, 46, 255, 0.3);
+  color: white;
+  border-color: #8a2eff;
+  box-shadow: 0 0 15px rgba(138, 46, 255, 0.5);
+}
+
+.delete-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ff3333;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin-active .delete-btn {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.delete-btn:hover {
+  background: #ff0000;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.admin-login {
+  margin: 30px auto;
+  padding: 20px;
+  max-width: 500px;
+}
+
+#admin-pass {
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 2px solid #6f00ff;
+  background: rgba(111, 0, 255, 0.1);
+  color: white;
+  width: 200px;
+  margin-right: 10px;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.admin-login button {
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: 2px solid #6f00ff;
+  background: transparent;
+  color: #c5bfff;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.2s;
+}
+
+.admin-login button:hover {
+  background: #6f00ff;
+  color: white;
+}
+
+.admin {
+  display: none;
+  margin: 40px auto;
+  width: 90%;
+  max-width: 800px;
+  border: 2px dashed #6f00ff;
+  padding: 25px;
+  border-radius: 15px;
+  background: rgba(11, 12, 23, 0.8);
+}
+
+.admin h2 {
+  color: #8a2eff;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.admin h3 {
+  color: #c5bfff;
+  margin: 25px 0 15px 0;
+  font-size: 20px;
+}
+
+.admin input {
+  padding: 14px;
+  margin: 8px;
+  border-radius: 10px;
+  border: 2px solid #6f00ff;
+  background: rgba(111, 0, 255, 0.1);
+  color: white;
+  font-size: 16px;
+  width: calc(100% - 20px);
+  max-width: 400px;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.admin button {
+  padding: 14px 28px;
+  margin-top: 15px;
+  border-radius: 10px;
+  border: 2px solid #6f00ff;
+  background: transparent;
+  color: #c5bfff;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.2s;
+}
+
+.admin button:hover {
+  background: #6f00ff;
+  color: white;
+  transform: translateY(-2px);
+}
+
+#admin-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+#admin-categories button {
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 2px solid #6f00ff;
+  background: transparent;
+  color: #c5bfff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#admin-categories button:hover {
+  background: #6f00ff;
+  color: white;
+}
+
+#gameCount {
+  margin: 20px 0;
+  color: #8a2eff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+  
+  #search {
+    width: 95%;
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  .filter-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+    min-width: 100px;
+  }
+  
+  a.game-link {
+    padding: 15px;
+    padding-right: 50px;
+  }
+  
+  .admin {
+    padding: 15px;
+    width: 95%;
+  }
+  
+  .admin input {
+    width: 100%;
+    margin: 8px 0;
+  }
+  
+  .admin-login {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  #admin-pass {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 0 10px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 28px;
+  }
+  
+  .filter-btn {
+    min-width: 80px;
+    padding: 10px;
+    font-size: 12px;
+  }
+  
+  a.game-link {
+    font-size: 16px;
+    padding: 12px;
+    padding-right: 40px;
+  }
+  
+  .delete-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0c0f1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6f00ff;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8a2eff;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>🎮 Spiele-Filter</h1>
+
+<div id="loading">
+  <div class="loader"></div>
+</div>
+
+<input id="search" type="text" placeholder="🔍 Spiel suchen...">
+
+<div id="filterContainer"></div>
+
+<div id="gameCount">Lade Spiele...</div>
+
+<div class="admin-login">
+  <input id="admin-pass" type="password" placeholder="Admin Passwort">
+  <button onclick="loginAdmin()">Admin Login</button>
+</div>
+
+<div id="adminPanel" class="admin">
+  <h2>🛠 Admin Panel</h2>
+  <input id="admin-name" placeholder="Spielname (z.B. Fortnite)">
+  <input id="admin-link" placeholder="Spiel-Link (https://...)">
+  <input id="admin-cat" placeholder="Kategorien (z.B. action battle-royale kostenlos)">
+  <br>
+  <button onclick="addGame()">➕ Spiel hinzufügen</button>
+  
+  <h3>📂 Kategorien verwalten</h3>
+  <p style="color: #a0a0ff; font-size: 14px; margin-bottom: 15px;">
+    Klicke auf eine Kategorie, um sie aus ALLEN Spielen zu entfernen
+  </p>
+  <div id="admin-categories"></div>
+</div>
+
+<ul id="gameList"></ul>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ========== FIREBASE KONFIGURATION ==========
+// DEINE ECHTEN DATEN AUS DEM SCREENSHOT!
+const firebaseConfig = {
+    apiKey: "AIzaSyCCTLk_rttlUtG44q4OSFUAMXI_aR_5b8LM",
+    authDomain: "gaming-spiele-filter.firebaseapp.com",
+    projectId: "gaming-spiele-filter",
+    storageBucket: "gaming-spiele-filter.firebasetorage.app",
+    messagingSenderId: "617814794782",
+    appId: "1:617814794782:web:2fe1b9eabe99889bb9849f",
+    measurementId: "G-WN37WBBNEV"
+};
+
+// Firebase initialisieren
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ========== GLOBALE VARIABLEN ==========
+const ADMIN_PASSWORD = "admin123"; // Ändere dieses Passwort!
+const filterContainer = document.getElementById("filterContainer");
+const search = document.getElementById("search");
+const list = document.getElementById("gameList");
+const gameCount = document.getElementById("gameCount");
+let adminMode = false;
+let gamesArray = [];
+
+// ========== HILFSFUNKTIONEN ==========
+function showLoading() {
+  document.getElementById('loading').style.display = 'block';
+}
+
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+
+function showMessage(text, isError = false) {
+  const message = document.createElement('div');
+  message.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    background: ${isError ? '#ff3333' : '#8a2eff'};
+    color: white;
+    border-radius: 10px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+    font-family: 'Orbitron', sans-serif;
+  `;
+  message.textContent = text;
+  document.body.appendChild(message);
+  
+  setTimeout(() => {
+    message.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => document.body.removeChild(message), 300);
+  }, 3000);
+}
+
+// ========== FILTER FUNKTIONALITÄT ==========
+function createButton(cat) {
+  if (document.querySelector(`.filter-btn[data-cat="${cat}"]`) || !cat.trim()) return;
+  
+  const btn = document.createElement("button");
+  btn.className = "filter-btn";
+  btn.dataset.cat = cat;
+  btn.innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
+  btn.onclick = () => {
+    btn.classList.toggle("active");
+    applyFilters();
+  };
+  filterContainer.appendChild(btn);
+}
+
+function renderGame(game) {
+  const li = document.createElement("li");
+  li.dataset.id = game.id;
+  li.dataset.cat = game.cat || "";
+  
+  const link = document.createElement("a");
+  link.className = "game-link";
+  link.href = game.link;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = game.name;
+  
+  // Klick-Event für den Link
+  link.addEventListener('click', (e) => {
+    if (adminMode) {
+      e.preventDefault();
+      editGame(game.id);
+    }
+  });
+  
+  li.appendChild(link);
+  
+  // Alle Kategorien des Spiels als Buttons erstellen
+  if (game.cat) {
+    game.cat.split(" ").forEach(cat => {
+      if (cat.trim()) createButton(cat.trim());
+    });
+  }
+  
+  list.appendChild(li);
+}
+
+function refreshButtons() {
+  const allCats = [...new Set(gamesArray.flatMap(g => 
+    g.cat ? g.cat.split(" ").filter(c => c.trim()) : []
+  ))];
+  
+  const buttons = document.querySelectorAll(".filter-btn");
+  const existingCats = [...buttons].map(btn => btn.dataset.cat);
+  
+  // Entferne Buttons für nicht mehr existierende Kategorien
+  buttons.forEach(btn => {
+    if (!allCats.includes(btn.dataset.cat)) {
+      btn.remove();
+    }
+  });
+  
+  // Füge neue Buttons hinzu
+  allCats.forEach(cat => {
+    if (!existingCats.includes(cat)) {
+      createButton(cat);
+    }
+  });
+}
+
+function applyFilters() {
+  const buttons = document.querySelectorAll(".filter-btn");
+  const activeCats = [...buttons]
+    .filter(b => b.classList.contains("active"))
+    .map(b => b.dataset.cat);
+  
+  const searchTerm = search.value.toLowerCase().trim();
+  let visibleCount = 0;
+  
+  [...list.children].forEach(item => {
+    const name = item.querySelector("a").textContent.toLowerCase();
+    const cats = item.dataset.cat ? item.dataset.cat.split(" ") : [];
+    
+    const matchSearch = !searchTerm || name.includes(searchTerm);
+    const matchFilter = activeCats.length === 0 || 
+                       activeCats.some(cat => cats.includes(cat));
+    
+    if (matchSearch && matchFilter) {
+      item.style.display = "";
+      visibleCount++;
+    } else {
+      item.style.display = "none";
+    }
+  });
+  
+  gameCount.textContent = `${visibleCount} von ${gamesArray.length} Spielen angezeigt`;
+}
+
+// ========== ADMIN FUNKTIONALITÄT ==========
+function loginAdmin() {
+  const pass = document.getElementById("admin-pass").value.trim();
+  
+  if (pass === ADMIN_PASSWORD) {
+    adminMode = true;
+    document.getElementById("adminPanel").style.display = "block";
+    document.getElementById("admin-pass").value = "";
+    document.body.classList.add('admin-active');
+    showMessage("Admin-Zugriff aktiviert");
+    refreshAdminCategories();
+  } else {
+    showMessage("Falsches Passwort!", true);
+    document.getElementById("admin-pass").value = "";
+  }
+}
+
+function addGame() {
+  const name = document.getElementById("admin-name").value.trim();
+  const link = document.getElementById("admin-link").value.trim();
+  let cat = document.getElementById("admin-cat").value.trim().toLowerCase();
+  
+  if (!name || !link || !cat) {
+    showMessage("Bitte alle Felder ausfüllen!", true);
+    return;
+  }
+  
+  // URL Validierung
+  if (!link.startsWith('http://') && !link.startsWith('https://')) {
+    showMessage("Link muss mit http:// oder https:// beginnen!", true);
+    return;
+  }
+  
+  // Kategorien bereinigen
+  cat = cat.split(' ')
+    .filter(c => c.trim())
+    .join(' ');
+  
+  // In Firestore speichern
+  db.collection("games").add({
+    name: name,
+    link: link,
+    cat: cat,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then((docRef) => {
+    showMessage(`Spiel "${name}" erfolgreich hinzugefügt!`);
+    
+    // Felder leeren
+    document.getElementById("admin-name").value = "";
+    document.getElementById("admin-link").value = "";
+    document.getElementById("admin-cat").value = "";
+    
+  }).catch((error) => {
+    console.error("Fehler beim Hinzufügen: ", error);
+    showMessage("Fehler beim Hinzufügen: " + error.message, true);
+  });
+}
+
+function editGame(gameId) {
+  if (!adminMode) return;
+  
+  const game = gamesArray.find(g => g.id === gameId);
+  if (!game) return;
+  
+  const newName = prompt("Neuer Name:", game.name);
+  if (newName === null) return;
+  
+  const newLink = prompt("Neuer Link:", game.link);
+  if (newLink === null) return;
+  
+  const newCat = prompt("Neue Kategorien (mit Leerzeichen trennen):", game.cat);
+  if (newCat === null) return;
+  
+  db.collection("games").doc(gameId).update({
+    name: newName.trim(),
+    link: newLink.trim(),
+    cat: newCat.trim().toLowerCase()
+  }).then(() => {
+    showMessage("Spiel erfolgreich aktualisiert!");
+  }).catch((error) => {
+    showMessage("Fehler beim Aktualisieren: " + error.message, true);
+  });
+}
+
+function refreshAdminCategories() {
+  if (!adminMode) return;
+  
+  const catDiv = document.getElementById("admin-categories");
+  catDiv.innerHTML = "";
+  
+  // Alle eindeutigen Kategorien sammeln
+  const allCats = [];
+  gamesArray.forEach(g => {
+    if (g.cat) {
+      g.cat.split(" ").forEach(c => {
+        const trimmedCat = c.trim();
+        if (trimmedCat && !allCats.includes(trimmedCat)) {
+          allCats.push(trimmedCat);
+        }
+      });
+    }
+  });
+  
+  allCats.sort();
+  
+  // Kategorie-Buttons erstellen
+  allCats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.innerHTML = `🗑 ${cat}`;
+    btn.title = `Kategorie "${cat}" aus allen Spielen entfernen`;
+    btn.onclick = () => {
+      if (confirm(`Kategorie "${cat}" wirklich aus ALLEN Spielen entfernen?`)) {
+        // Batch-Operation für alle betroffenen Spiele
+        const batch = db.batch();
+        let updateCount = 0;
+        
+        gamesArray.forEach(game => {
+          if (game.cat && game.cat.split(" ").includes(cat)) {
+            const newCats = game.cat.split(" ")
+              .filter(c => c !== cat)
+              .join(" ")
+              .trim();
+            
+            const gameRef = db.collection("games").doc(game.id);
+            batch.update(gameRef, { cat: newCats || "" });
+            updateCount++;
+          }
+        });
+        
+        if (updateCount > 0) {
+          batch.commit().then(() => {
+            showMessage(`Kategorie "${cat}" wurde von ${updateCount} Spielen entfernt.`);
+          }).catch(error => {
+            console.error("Fehler beim Aktualisieren: ", error);
+            showMessage("Fehler beim Aktualisieren der Spiele", true);
+          });
+        } else {
+          showMessage(`Keine Spiele mit Kategorie "${cat}" gefunden.`, true);
+        }
+      }
+    };
+    catDiv.appendChild(btn);
+  });
+}
+
+// ========== SPIELE LADEN UND RENDERN ==========
+function renderAllGames() {
+  showLoading();
+  
+  // Liste leeren
+  list.innerHTML = "";
+  filterContainer.innerHTML = "";
+  
+  // Alphabetisch sortieren
+  gamesArray.sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }));
+  
+  // Spiele rendern
+  gamesArray.forEach(renderGame);
+  
+  // Buttons aktualisieren
+  refreshButtons();
+  
+  // Admin-Kategorien aktualisieren (falls Admin)
+  if (adminMode) {
+    refreshAdminCategories();
+  }
+  
+  // Filter anwenden
+  applyFilters();
+  
+  hideLoading();
+}
+
+// ========== EVENT LISTENER ==========
+search.addEventListener("input", applyFilters);
+
+// ========== FIRESTORE REAL-TIME UPDATES ==========
+db.collection("games").onSnapshot((snapshot) => {
+  showLoading();
+  
+  gamesArray = snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+  
+  renderAllGames();
+  
+  // Fehlerbehandlung
+  snapshot.docChanges().forEach(change => {
+    if (change.type === 'removed') {
+      const item = document.querySelector(`li[data-id="${change.doc.id}"]`);
+      if (item) item.remove();
+    }
+  });
+  
+}, (error) => {
+  console.error("Firestore Fehler:", error);
+  showMessage("Fehler beim Laden der Spiele", true);
+  hideLoading();
+});
+
+// ========== ANIMATIONEN ==========
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+
+// ========== INITIALISIERUNG ==========
+// Prüfe ob Firebase korrekt initialisiert wurde
+setTimeout(() => {
+  if (!firebase.apps.length) {
+    showMessage("Firebase nicht korrekt konfiguriert!", true);
+    gameCount.textContent = "FEHLER: Firebase nicht konfiguriert!";
+  }
+}, 2000);
+
+// Tastatur-Shortcuts
+document.addEventListener('keydown', (e) => {
+  // Strg+Alt+A für Admin Login
+  if (e.ctrlKey && e.altKey && e.key === 'a') {
+    e.preventDefault();
+    document.getElementById('admin-pass').focus();
+  }
+  
+  // Escape zum Abbrechen
+  if (e.key === 'Escape' && adminMode) {
+    document.body.classList.remove('admin-active');
+    adminMode = false;
+    document.getElementById('adminPanel').style.display = 'none';
+    showMessage('Admin-Modus beendet');
+  }
+});
+</script>
+
+</body>
+</html>
