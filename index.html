@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gaming Spiele-Filter</title>
+<!-- style-->
+<div>
 <style>
 * {
   box-sizing: border-box;
@@ -140,7 +142,7 @@ a.game-link {
   transition: all 0.3s;
   border: 2px solid transparent;
   text-align: left;
-  padding-right: 60px;
+  padding-right: 140px;
 }
 
 a.game-link:hover {
@@ -168,13 +170,37 @@ a.game-link:hover {
   pointer-events: none;
 }
 
-.admin-active .delete-btn {
+.edit-btn {
+  position: absolute;
+  right: 100px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ff9900;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin-active .delete-btn,
+.admin-active .edit-btn {
   opacity: 1;
   pointer-events: all;
 }
 
 .delete-btn:hover {
   background: #ff0000;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.edit-btn:hover {
+  background: #ffaa33;
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -191,9 +217,12 @@ a.game-link:hover {
   border: 2px solid #6f00ff;
   background: rgba(111, 0, 255, 0.1);
   color: white;
-  width: 200px;
-  margin-right: 10px;
+  width: 250px;
   font-family: 'Orbitron', sans-serif;
+  margin-bottom: 15px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .admin-login button {
@@ -206,6 +235,9 @@ a.game-link:hover {
   font-size: 16px;
   font-family: 'Orbitron', sans-serif;
   transition: all 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .admin-login button:hover {
@@ -247,6 +279,9 @@ a.game-link:hover {
   width: calc(100% - 20px);
   max-width: 400px;
   font-family: 'Orbitron', sans-serif;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .admin button {
@@ -260,6 +295,9 @@ a.game-link:hover {
   font-size: 16px;
   font-family: 'Orbitron', sans-serif;
   transition: all 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .admin button:hover {
@@ -268,28 +306,180 @@ a.game-link:hover {
   transform: translateY(-2px);
 }
 
-#admin-categories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 15px;
+/* Admin Spiel-Liste */
+#admin-games-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin: 20px 0;
+  padding: 10px;
+  border: 1px solid #6f00ff;
+  border-radius: 10px;
+  background: rgba(111, 0, 255, 0.05);
 }
 
-#admin-categories button {
-  margin: 0;
+.admin-game-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin: 10px 0;
+  background: rgba(111, 0, 255, 0.1);
+  border-radius: 10px;
+  border: 1px solid #6f00ff;
+  transition: all 0.3s;
+}
+
+.admin-game-item:hover {
+  background: rgba(111, 0, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.admin-game-info {
+  flex-grow: 1;
+  text-align: left;
+  padding-right: 20px;
+}
+
+.admin-game-name {
+  color: #e0e0ff;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.admin-game-categories {
+  color: #a0a0ff;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.admin-game-link {
+  color: #8888cc;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.admin-game-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.edit-admin-btn {
+  background: #ff9900;
+  color: white;
+  border: none;
   padding: 8px 16px;
-  border-radius: 8px;
-  border: 2px solid #6f00ff;
-  background: transparent;
-  color: #c5bfff;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
   transition: all 0.2s;
 }
 
-#admin-categories button:hover {
-  background: #6f00ff;
+.edit-admin-btn:hover {
+  background: #ffaa33;
+  transform: scale(1.05);
+}
+
+.delete-admin-btn {
+  background: #ff3333;
   color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.delete-admin-btn:hover {
+  background: #ff0000;
+  transform: scale(1.05);
+}
+
+/* Bearbeitungs-Modal */
+.edit-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-modal-content {
+  background: #0c0f1a;
+  padding: 30px;
+  border-radius: 15px;
+  border: 3px solid #6f00ff;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 30px rgba(111, 0, 255, 0.5);
+}
+
+.edit-modal h3 {
+  color: #8a2eff;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.edit-modal input {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 2px solid #6f00ff;
+  background: rgba(111, 0, 255, 0.1);
+  color: white;
+  font-size: 16px;
+  width: 100%;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.edit-modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.edit-modal-save {
+  background: #00cc66;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.edit-modal-save:hover {
+  background: #00ff88;
+  transform: scale(1.05);
+}
+
+.edit-modal-cancel {
+  background: #666666;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.edit-modal-cancel:hover {
+  background: #888888;
+  transform: scale(1.05);
 }
 
 #gameCount {
@@ -319,7 +509,11 @@ a.game-link:hover {
   
   a.game-link {
     padding: 15px;
-    padding-right: 50px;
+    padding-right: 120px;
+  }
+  
+  .edit-btn {
+    right: 85px;
   }
   
   .admin {
@@ -344,6 +538,17 @@ a.game-link:hover {
     max-width: 300px;
     margin: 0 0 10px 0;
   }
+  
+  .admin-game-item {
+    flex-direction: column;
+    text-align: left;
+    gap: 15px;
+  }
+  
+  .admin-game-actions {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 480px) {
@@ -360,12 +565,22 @@ a.game-link:hover {
   a.game-link {
     font-size: 16px;
     padding: 12px;
-    padding-right: 40px;
+    padding-right: 100px;
   }
   
-  .delete-btn {
+  .delete-btn,
+  .edit-btn {
     padding: 6px 12px;
     font-size: 12px;
+  }
+  
+  .edit-btn {
+    right: 70px;
+  }
+  
+  .edit-modal-content {
+    padding: 20px;
+    width: 95%;
   }
 }
 
@@ -387,6 +602,10 @@ a.game-link:hover {
   background: #8a2eff;
 }
 </style>
+
+</div>
+
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -408,19 +627,40 @@ a.game-link:hover {
   <button onclick="loginAdmin()">Admin Login</button>
 </div>
 
+<!-- Admin Panel -->
 <div id="adminPanel" class="admin">
   <h2>🛠 Admin Panel</h2>
+  
+  <h3>➕ Neues Spiel hinzufügen</h3>
   <input id="admin-name" placeholder="Spielname (z.B. Fortnite)">
   <input id="admin-link" placeholder="Spiel-Link (https://...)">
-  <input id="admin-cat" placeholder="Kategorien (z.B. action battle-royale kostenlos)">
-  <br>
-  <button onclick="addGame()">➕ Spiel hinzufügen</button>
+  <input id="admin-cat" placeholder="Kategorien (mit Leerzeichen trennen, z.B. action battle-royale kostenlos)">
+  <button onclick="addGame()">Spiel hinzufügen</button>
   
-  <h3>📂 Kategorien verwalten</h3>
+  <h3>📋 Alle Spiele verwalten</h3>
   <p style="color: #a0a0ff; font-size: 14px; margin-bottom: 15px;">
-    Klicke auf eine Kategorie, um sie aus ALLEN Spielen zu entfernen
+    Hier kannst du Spiele bearbeiten oder löschen. Änderungen werden sofort gespeichert!
   </p>
-  <div id="admin-categories"></div>
+  
+  <div id="admin-games-list">
+    <p style="color: #a0a0ff; text-align: center; padding: 20px;">
+      Keine Spiele vorhanden oder Admin-Modus nicht aktiv
+    </p>
+  </div>
+</div>
+
+<!-- Bearbeitungs-Modal -->
+<div id="editModal" class="edit-modal">
+  <div class="edit-modal-content">
+    <h3>✏️ Spiel bearbeiten</h3>
+    <input id="edit-name" placeholder="Spielname">
+    <input id="edit-link" placeholder="Spiel-Link">
+    <input id="edit-cat" placeholder="Kategorien">
+    <div class="edit-modal-actions">
+      <button id="edit-save" class="edit-modal-save">Speichern</button>
+      <button id="edit-cancel" class="edit-modal-cancel">Abbrechen</button>
+    </div>
+  </div>
 </div>
 
 <ul id="gameList"></ul>
@@ -431,7 +671,6 @@ a.game-link:hover {
 
 <script>
 // ========== FIREBASE KONFIGURATION ==========
-// DEINE ECHTEN DATEN AUS DEM SCREENSHOT!
 const firebaseConfig = {
     apiKey: "AIzaSyCCTLk_rttlUtG44q4OSFUAMXI_aR_5b8LM",
     authDomain: "gaming-spiele-filter.firebaseapp.com",
@@ -452,8 +691,12 @@ const filterContainer = document.getElementById("filterContainer");
 const search = document.getElementById("search");
 const list = document.getElementById("gameList");
 const gameCount = document.getElementById("gameCount");
+const adminGamesList = document.getElementById("admin-games-list");
+const editModal = document.getElementById("editModal");
+
 let adminMode = false;
 let gamesArray = [];
+let currentEditGameId = null;
 
 // ========== HILFSFUNKTIONEN ==========
 function showLoading() {
@@ -471,12 +714,13 @@ function showMessage(text, isError = false) {
     top: 20px;
     right: 20px;
     padding: 15px 25px;
-    background: ${isError ? '#ff3333' : '#8a2eff'};
+    background: ${isError ? '#ff3333' : '#00cc66'};
     color: white;
     border-radius: 10px;
     z-index: 1000;
     animation: slideIn 0.3s ease;
     font-family: 'Orbitron', sans-serif;
+    box-shadow: 0 0 20px rgba(111, 0, 255, 0.3);
   `;
   message.textContent = text;
   document.body.appendChild(message);
@@ -495,10 +739,13 @@ function createButton(cat) {
   btn.className = "filter-btn";
   btn.dataset.cat = cat;
   btn.innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
+  
+  // Toggle-Funktion - ein Klick aktiviert, nochmal Klick deaktiviert
   btn.onclick = () => {
     btn.classList.toggle("active");
     applyFilters();
   };
+  
   filterContainer.appendChild(btn);
 }
 
@@ -514,15 +761,31 @@ function renderGame(game) {
   link.rel = "noopener noreferrer";
   link.textContent = game.name;
   
-  // Klick-Event für den Link
-  link.addEventListener('click', (e) => {
+  // Bearbeiten-Button
+  const editBtn = document.createElement("button");
+  editBtn.className = "edit-btn";
+  editBtn.textContent = "✏️ Bearbeiten";
+  editBtn.onclick = (e) => {
+    e.stopPropagation();
     if (adminMode) {
-      e.preventDefault();
-      editGame(game.id);
+      openEditModal(game.id);
     }
-  });
+  };
+  
+  // Löschen-Button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete-btn";
+  deleteBtn.textContent = "🗑 Löschen";
+  deleteBtn.onclick = (e) => {
+    e.stopPropagation();
+    if (adminMode && confirm(`"${game.name}" wirklich löschen?`)) {
+      deleteGame(game.id);
+    }
+  };
   
   li.appendChild(link);
+  li.appendChild(editBtn);
+  li.appendChild(deleteBtn);
   
   // Alle Kategorien des Spiels als Buttons erstellen
   if (game.cat) {
@@ -595,13 +858,48 @@ function loginAdmin() {
     document.getElementById("admin-pass").value = "";
     document.body.classList.add('admin-active');
     showMessage("Admin-Zugriff aktiviert");
-    refreshAdminCategories();
+    refreshAdminGamesList();
   } else {
     showMessage("Falsches Passwort!", true);
     document.getElementById("admin-pass").value = "";
   }
 }
 
+// Spieleliste im Admin-Panel aktualisieren
+function refreshAdminGamesList() {
+  if (!adminMode) return;
+  
+  adminGamesList.innerHTML = "";
+  
+  if (gamesArray.length === 0) {
+    adminGamesList.innerHTML = '<p style="color: #a0a0ff; text-align: center; padding: 20px;">Keine Spiele vorhanden</p>';
+    return;
+  }
+  
+  gamesArray.sort((a, b) => a.name.localeCompare(b.name, 'de', { sensitivity: 'base' }));
+  
+  gamesArray.forEach(game => {
+    const gameDiv = document.createElement("div");
+    gameDiv.className = "admin-game-item";
+    gameDiv.dataset.id = game.id;
+    
+    gameDiv.innerHTML = `
+      <div class="admin-game-info">
+        <div class="admin-game-name">${game.name}</div>
+        <div class="admin-game-categories">🏷️ Kategorien: ${game.cat || 'Keine Kategorien'}</div>
+        <div class="admin-game-link">🔗 ${game.link}</div>
+      </div>
+      <div class="admin-game-actions">
+        <button class="edit-admin-btn" onclick="openEditModal('${game.id}')">Bearbeiten</button>
+        <button class="delete-admin-btn" onclick="deleteGame('${game.id}')">Löschen</button>
+      </div>
+    `;
+    
+    adminGamesList.appendChild(gameDiv);
+  });
+}
+
+// Neues Spiel hinzufügen
 function addGame() {
   const name = document.getElementById("admin-name").value.trim();
   const link = document.getElementById("admin-link").value.trim();
@@ -630,7 +928,7 @@ function addGame() {
     cat: cat,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   }).then((docRef) => {
-    showMessage(`Spiel "${name}" erfolgreich hinzugefügt!`);
+    showMessage(`✅ "${name}" wurde hinzugefügt!`);
     
     // Felder leeren
     document.getElementById("admin-name").value = "";
@@ -643,90 +941,86 @@ function addGame() {
   });
 }
 
-function editGame(gameId) {
+// Spiel löschen
+function deleteGame(gameId) {
   if (!adminMode) return;
   
   const game = gamesArray.find(g => g.id === gameId);
   if (!game) return;
   
-  const newName = prompt("Neuer Name:", game.name);
-  if (newName === null) return;
-  
-  const newLink = prompt("Neuer Link:", game.link);
-  if (newLink === null) return;
-  
-  const newCat = prompt("Neue Kategorien (mit Leerzeichen trennen):", game.cat);
-  if (newCat === null) return;
-  
-  db.collection("games").doc(gameId).update({
-    name: newName.trim(),
-    link: newLink.trim(),
-    cat: newCat.trim().toLowerCase()
-  }).then(() => {
-    showMessage("Spiel erfolgreich aktualisiert!");
-  }).catch((error) => {
-    showMessage("Fehler beim Aktualisieren: " + error.message, true);
-  });
+  if (confirm(`"${game.name}" wirklich löschen?`)) {
+    db.collection("games").doc(gameId).delete()
+      .then(() => {
+        showMessage(`🗑️ "${game.name}" wurde gelöscht.`);
+      })
+      .catch((error) => {
+        showMessage("Fehler beim Löschen: " + error.message, true);
+      });
+  }
 }
 
-function refreshAdminCategories() {
+// ========== BEARBEITUNGS-FUNKTIONALITÄT ==========
+function openEditModal(gameId) {
   if (!adminMode) return;
   
-  const catDiv = document.getElementById("admin-categories");
-  catDiv.innerHTML = "";
+  const game = gamesArray.find(g => g.id === gameId);
+  if (!game) return;
   
-  // Alle eindeutigen Kategorien sammeln
-  const allCats = [];
-  gamesArray.forEach(g => {
-    if (g.cat) {
-      g.cat.split(" ").forEach(c => {
-        const trimmedCat = c.trim();
-        if (trimmedCat && !allCats.includes(trimmedCat)) {
-          allCats.push(trimmedCat);
-        }
-      });
-    }
-  });
+  currentEditGameId = gameId;
   
-  allCats.sort();
+  // Werte in die Formularfelder eintragen
+  document.getElementById('edit-name').value = game.name;
+  document.getElementById('edit-link').value = game.link;
+  document.getElementById('edit-cat').value = game.cat || '';
   
-  // Kategorie-Buttons erstellen
-  allCats.forEach(cat => {
-    const btn = document.createElement("button");
-    btn.innerHTML = `🗑 ${cat}`;
-    btn.title = `Kategorie "${cat}" aus allen Spielen entfernen`;
-    btn.onclick = () => {
-      if (confirm(`Kategorie "${cat}" wirklich aus ALLEN Spielen entfernen?`)) {
-        // Batch-Operation für alle betroffenen Spiele
-        const batch = db.batch();
-        let updateCount = 0;
-        
-        gamesArray.forEach(game => {
-          if (game.cat && game.cat.split(" ").includes(cat)) {
-            const newCats = game.cat.split(" ")
-              .filter(c => c !== cat)
-              .join(" ")
-              .trim();
-            
-            const gameRef = db.collection("games").doc(game.id);
-            batch.update(gameRef, { cat: newCats || "" });
-            updateCount++;
-          }
-        });
-        
-        if (updateCount > 0) {
-          batch.commit().then(() => {
-            showMessage(`Kategorie "${cat}" wurde von ${updateCount} Spielen entfernt.`);
-          }).catch(error => {
-            console.error("Fehler beim Aktualisieren: ", error);
-            showMessage("Fehler beim Aktualisieren der Spiele", true);
-          });
-        } else {
-          showMessage(`Keine Spiele mit Kategorie "${cat}" gefunden.`, true);
-        }
-      }
-    };
-    catDiv.appendChild(btn);
+  // Modal anzeigen
+  editModal.style.display = 'flex';
+}
+
+function closeEditModal() {
+  editModal.style.display = 'none';
+  currentEditGameId = null;
+  
+  // Felder leeren
+  document.getElementById('edit-name').value = '';
+  document.getElementById('edit-link').value = '';
+  document.getElementById('edit-cat').value = '';
+}
+
+function saveEdit() {
+  if (!currentEditGameId || !adminMode) return;
+  
+  const newName = document.getElementById('edit-name').value.trim();
+  const newLink = document.getElementById('edit-link').value.trim();
+  let newCat = document.getElementById('edit-cat').value.trim().toLowerCase();
+  
+  if (!newName || !newLink) {
+    showMessage("Name und Link sind erforderlich!", true);
+    return;
+  }
+  
+  // URL Validierung
+  if (!newLink.startsWith('http://') && !newLink.startsWith('https://')) {
+    showMessage("Link muss mit http:// oder https:// beginnen!", true);
+    return;
+  }
+  
+  // Kategorien bereinigen
+  newCat = newCat.split(' ')
+    .filter(c => c.trim())
+    .join(' ');
+  
+  // In Firestore aktualisieren
+  db.collection("games").doc(currentEditGameId).update({
+    name: newName,
+    link: newLink,
+    cat: newCat
+  }).then(() => {
+    showMessage(`✏️ "${newName}" wurde aktualisiert!`);
+    closeEditModal();
+  }).catch((error) => {
+    console.error("Fehler beim Aktualisieren: ", error);
+    showMessage("Fehler beim Aktualisieren: " + error.message, true);
   });
 }
 
@@ -734,7 +1028,7 @@ function refreshAdminCategories() {
 function renderAllGames() {
   showLoading();
   
-  // Liste leeren
+  // Listen leeren
   list.innerHTML = "";
   filterContainer.innerHTML = "";
   
@@ -747,9 +1041,9 @@ function renderAllGames() {
   // Buttons aktualisieren
   refreshButtons();
   
-  // Admin-Kategorien aktualisieren (falls Admin)
+  // Admin-Liste aktualisieren (falls Admin)
   if (adminMode) {
-    refreshAdminCategories();
+    refreshAdminGamesList();
   }
   
   // Filter anwenden
@@ -760,6 +1054,17 @@ function renderAllGames() {
 
 // ========== EVENT LISTENER ==========
 search.addEventListener("input", applyFilters);
+
+// Modal Event Listener
+document.getElementById('edit-save').addEventListener('click', saveEdit);
+document.getElementById('edit-cancel').addEventListener('click', closeEditModal);
+
+// Modal schließen bei Klick außerhalb
+editModal.addEventListener('click', (e) => {
+  if (e.target === editModal) {
+    closeEditModal();
+  }
+});
 
 // ========== FIRESTORE REAL-TIME UPDATES ==========
 db.collection("games").onSnapshot((snapshot) => {
@@ -772,18 +1077,12 @@ db.collection("games").onSnapshot((snapshot) => {
   
   renderAllGames();
   
-  // Fehlerbehandlung
-  snapshot.docChanges().forEach(change => {
-    if (change.type === 'removed') {
-      const item = document.querySelector(`li[data-id="${change.doc.id}"]`);
-      if (item) item.remove();
-    }
-  });
-  
+  hideLoading();
 }, (error) => {
   console.error("Firestore Fehler:", error);
   showMessage("Fehler beim Laden der Spiele", true);
   hideLoading();
+  gameCount.textContent = "Fehler beim Laden der Spiele";
 });
 
 // ========== ANIMATIONEN ==========
@@ -801,16 +1100,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// ========== INITIALISIERUNG ==========
-// Prüfe ob Firebase korrekt initialisiert wurde
-setTimeout(() => {
-  if (!firebase.apps.length) {
-    showMessage("Firebase nicht korrekt konfiguriert!", true);
-    gameCount.textContent = "FEHLER: Firebase nicht konfiguriert!";
-  }
-}, 2000);
-
-// Tastatur-Shortcuts
+// ========== TASTATUR-SHORTCUTS ==========
 document.addEventListener('keydown', (e) => {
   // Strg+Alt+A für Admin Login
   if (e.ctrlKey && e.altKey && e.key === 'a') {
@@ -819,12 +1109,34 @@ document.addEventListener('keydown', (e) => {
   }
   
   // Escape zum Abbrechen
-  if (e.key === 'Escape' && adminMode) {
-    document.body.classList.remove('admin-active');
-    adminMode = false;
-    document.getElementById('adminPanel').style.display = 'none';
-    showMessage('Admin-Modus beendet');
+  if (e.key === 'Escape') {
+    if (editModal.style.display === 'flex') {
+      closeEditModal();
+    } else if (adminMode) {
+      document.body.classList.remove('admin-active');
+      adminMode = false;
+      document.getElementById('adminPanel').style.display = 'none';
+      showMessage('Admin-Modus beendet');
+    }
   }
+});
+
+// Enter-Taste für Admin Login
+document.getElementById('admin-pass').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    loginAdmin();
+  }
+});
+
+// Enter-Taste in Bearbeitungsfeldern
+document.getElementById('edit-name').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') saveEdit();
+});
+document.getElementById('edit-link').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') saveEdit();
+});
+document.getElementById('edit-cat').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') saveEdit();
 });
 </script>
 
